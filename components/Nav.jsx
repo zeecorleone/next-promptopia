@@ -7,18 +7,23 @@ import { signIn, signOut, useSession, getProviders  } from 'next-auth/react';
 
 const Nav = () => {
 
-  const isUserLoggedIn = true
+  //const isUserLoggedIn = true;
+
+  //useSession() is a custom hook that returns an object with a property called data.
+  //By using object destructuring, the code is extracting the value of data from
+  // the returned object and assigning it to a new variable called session.
+  const { data: session } = useSession();
   
   const [ providers, setProviders ] = useState(null);
   const [ toggleDropdown, setToggleDropdown ] = useState(false);
 
   useEffect(() =>{
-    const setProviders = async () => {
+    const setUpProviders = async () => {
       const response = await getProviders();
       setProviders(response);    
     }
 
-    setProviders();
+    setUpProviders();
 
   }, [])
 
@@ -38,7 +43,7 @@ const Nav = () => {
         {/* Desktop  Navigation */ }
         <div className='sm:flex hidden'>
             
-          {isUserLoggedIn ? (
+          {session?.user ? (
 
               <div className='flex gap-3 md:gap-5'>
                 <Link href="/create-prompt"
@@ -52,7 +57,7 @@ const Nav = () => {
 
                 <Link href='/profile'>
                   <Image
-                      src="/assets/images/logo.svg"
+                      src={session?.user.image}
                       width={37}
                       height={37}
                       className='rounded-full'
@@ -90,10 +95,10 @@ const Nav = () => {
         {/* Mobile Navigation */}
         <div className='sm:hidden flex relative'>
 
-            {isUserLoggedIn ? (
+            {session?.user ? (
               <div className='flex'>
                 <Image 
-                  src="/assets/images/logo.svg"
+                  src={session?.user.image}
                   width={37}
                   height={37}
                   className='rounded-full'
@@ -104,14 +109,14 @@ const Nav = () => {
                 {toggleDropdown && (
                   <div className='dropdown'>
                     <Link
-                      href="/create-prompt"
+                      href="/profile"
                       className='dropdown_link'
                       onClick={() => setToggleDropdown(false)}
                       >
                         My Profile
                     </Link>
                     <Link
-                      href="/profile"
+                      href="/create-prompt"
                       className='dropdown_link'
                       onClick={() => setToggleDropdown(false)}
                       >
